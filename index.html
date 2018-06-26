@@ -78,32 +78,32 @@
       
 
         //replicate of supplementary figure 1
+        //replicate of supplementary figure 1
         var data1 = google.visualization.arrayToDataTable([
-          ['Type I', 'Type II', 'Type III', 'Type II/III', ]
-          [183, 107, 6, null], 
-          [223, 169, 4, null], 
-          [91, null, null, 32]
+          ['Alternative Splicing Events', 'Type I', { role: 'annotation' }, 'Type II', { role: 'annotation' }, 'Type III', { role: 'annotation' }, 'Type II/III', { role: 'annotation' }],
+          ['in vivo', 183, '62%', 107, '36%', 6, '2%', null, ''], 
+          ['in vitro', 223, '56%', 169, '43%', 4, '1%', null, ''], 
+          ['in vitro and in vivo', 91, '74%', null, '', null, '', 32, '26%']
           ]);
         var data1_options = {
           series: {
-            0: {color: 'blue'},
-            1: {color: 'green'},
-            2: {color: 'red'},
-            3: {color: 'green', visibleInLegend: false},
-          }
-          chart: {
-            title: 'Alternative splicing events in the 5K panel',
-            subtitle: '',
-          }
+            0:{color: '#1E90FF'},
+            1:{color: '#3CB371'},
+            2:{color: 'red', annotations: {stem: {length: -12}},},
+            3:{color: '#3CB371', visibleInLegend: false},
+          },
+          title: 'Alternative splicing events in the 5K panel',
           isStacked: 'percent',
-          height: 300,
+          height: 800,
+          width: 1000,
           legend: {position: 'right', maxLines: 4},
           vAxis: {
             minValue: 0,
             ticks: [0, .25, .5, .75, 1]
           }
         };
-        var suppfig1 = new google.visualization.ColumnChart(document.getElementById('suppfig1'));
+        var container = document.getElementById('suppfig1');
+        var suppfig1 = new google.visualization.ColumnChart(container);
         suppfig1.draw(data1, data1_options);
 
         // var data1 = google.visualization.DataTable();
