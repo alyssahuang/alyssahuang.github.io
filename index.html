@@ -29,7 +29,7 @@
           alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
           return;
         }
-
+        //for sample chart 1
         var data = response.getDataTable();
         var col_options = {
           series: {
@@ -49,6 +49,11 @@
           }
 
         };
+        //columnchart
+        var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+        chart.draw(data, col_options);
+
+        //for sample chart 2
         var curve_options = {
           curveType: 'function',
           series: {
@@ -67,16 +72,61 @@
             slantedTextAngle: 90
           }
         };
-        //columnchart
-        var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
-        chart.draw(data, col_options);
-
         //linechart
         var chart1 = new google.visualization.LineChart(document.getElementById('curve_chart'));
         chart1.draw(data, curve_options);
-      }
+      
 
-      //   // Hardcoding chart
+        //replicate of supplementary figure 1
+        var data1 = google.visualization.arrayToDataTable([
+          ['Type I', 'Type II', 'Type III', 'Type II/III', ]
+          [183, 107, 6, null], 
+          [223, 169, 4, null], 
+          [91, null, null, 32]
+          ]);
+        var data1_options = {
+          series: {
+            0: {color: 'blue'},
+            1: {color: 'green'},
+            2: {color: 'red'},
+            3: {color: 'green', visibleInLegend: false},
+          }
+          chart: {
+            title: 'Alternative splicing events in the 5K panel',
+            subtitle: '',
+          }
+          isStacked: 'percent',
+          height: 300,
+          legend: {position: 'right', maxLines: 4},
+          vAxis: {
+            minValue: 0,
+            ticks: [0, .25, .5, .75, 1]
+          }
+        };
+        var suppfig1 = new google.visualization.ColumnChart(document.getElementById('suppfig1'));
+        suppfig1.draw(data1, data1_options);
+
+        // var data1 = google.visualization.DataTable();
+        // data1.addColumn('number', 'Type I');
+        // data1.addColumn('number', 'Type II');
+        // data1.addColumn('number', 'Type III');
+        // data1.addRows([183, 107, 6], [223, 169, 4], [91, 32, null]);
+        // var view = new google.visualization.DataView(data1);
+
+        //   ['Type I', 'Type II', 'Type III', { role: 'annotation' } ],
+        //   ['Alternate Events in vivo', 183, 107, , ''],
+        //   ['Alternative Events in vitro', 223, 169, , ''],
+        //   ['Alternative Events in vitro and in vivo', 91, 32, , ''];
+        // var options_fullStacked = {
+        //   isStacked: 'percent',
+        //   height: 300,
+        //   legend: {position: 'top', maxLines: 3},
+        //   vAxis: {
+        //     minValue: 0,
+        //     ticks: [0, .25, .5, .75, 1]
+        //   }
+        // };
+      }
       // function drawChart() {
 
       //   // Create the data table.
@@ -107,5 +157,6 @@
     <!--Div that will hold the pie chart-->
     <div id="chart_div" style="width: 1500px; height: 800px;"></div>
     <div id="curve_chart" style="width: 1500px; height: 800px;"></div>
+    <div id="suppfig1" style="width: 1500px; height: 800px;"></div>
   </body>
 </html>
