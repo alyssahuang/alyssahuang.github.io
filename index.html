@@ -9,6 +9,7 @@
 
       // Set a callback to run when the Google Visualization API is loaded.
       google.charts.setOnLoadCallback(drawSheetName);
+      google.charts.setOnLoadCallback(drawPTEN);
 
       // Callback that creates and populates a data table,
       // instantiates the pie chart, passes in the data and
@@ -17,11 +18,34 @@
       function drawSheetName() {
         //var queryString = encodeURIComponent('SELECT D, E, F, G, H, I, J');
         var queryString = encodeURIComponent('SELECT C, F, G , H, I ORDER BY A');
-        var query = new google.visualization.Query('https://docs.google.com/spreadsheets/d/19MzVXOJdGFoLaR3Crc4N90uISC-jYKj16vinwV_ogkU/edit?usp=sharing' + '&tq=' + queryString);
-        //var queryString = encodeURIComponent('SELECT F, G, H');
-        //var query = new google.visualization.Query('https://docs.google.com/spreadsheets/d/19MzVXOJdGFoLaR3Crc4N90uISC-jYKj16vinwV_ogkU/edit?usp=sharing');
-
+        var query = new google.visualization.Query('https://docs.google.com/spreadsheets/d/19MzVXOJdGFoLaR3Crc4N90uISC-jYKj16vinwV_ogkU/edit?usp=sharing' + '&tq=' + queryString);        
         query.send(handleQueryResponse);
+
+      }
+      function drawPTEN() {
+        //original large chart
+        var pten_queryString = encodeURIComponent('SELECT A, G WHERE F != \'NA\' ORDER BY F');
+        var pten_queryString1 = encodeURIComponent('SELECT A, G WHERE F = \'low\' ORDER BY E');
+        var pten_queryString2 = encodeURIComponent('SELECT A, G WHERE F = \'possibly_low\' ORDER BY E');
+        var pten_queryString3 = encodeURIComponent('SELECT A, G WHERE F = \'possibly_wt-like\' ORDER BY E');
+        var pten_queryString4 = encodeURIComponent('SELECT A, G WHERE F = \'wt-like\' ORDER BY E');
+        var pten_query = new google.visualization.Query('https://docs.google.com/spreadsheets/d/11VBFK5PBISyVOb-tnicFHF3GB8iYgg8ib5UxFYNE4-k/edit?usp=sharing' + '&tq=' + pten_queryString);
+        pten_query.send(handleQueryResponse0);
+        var pten_query1 = new google.visualization.Query('https://docs.google.com/spreadsheets/d/11VBFK5PBISyVOb-tnicFHF3GB8iYgg8ib5UxFYNE4-k/edit?usp=sharing' + '&tq=' + pten_queryString1);
+        pten_query1.send(handleQueryResponse1);
+        var pten_query2 = new google.visualization.Query('https://docs.google.com/spreadsheets/d/11VBFK5PBISyVOb-tnicFHF3GB8iYgg8ib5UxFYNE4-k/edit?usp=sharing' + '&tq=' + pten_queryString2);
+        pten_query2.send(handleQueryResponse2);
+        var pten_query3 = new google.visualization.Query('https://docs.google.com/spreadsheets/d/11VBFK5PBISyVOb-tnicFHF3GB8iYgg8ib5UxFYNE4-k/edit?usp=sharing' + '&tq=' + pten_queryString3);
+        pten_query3.send(handleQueryResponse3);
+        var pten_query4 = new google.visualization.Query('https://docs.google.com/spreadsheets/d/11VBFK5PBISyVOb-tnicFHF3GB8iYgg8ib5UxFYNE4-k/edit?usp=sharing' + '&tq=' + pten_queryString4);
+        pten_query4.send(handleQueryResponse4);
+
+        
+        //for testing
+        // var queryString = encodeURIComponent('SELECT C, F, G , H, I ORDER BY A');
+        // var query = new google.visualization.Query('https://docs.google.com/spreadsheets/d/19MzVXOJdGFoLaR3Crc4N90uISC-jYKj16vinwV_ogkU/edit?usp=sharing' + '&tq=' + queryString);
+        // query.send(handleQueryResponse1);
+
       }
 
       function handleQueryResponse(response) {
@@ -29,7 +53,7 @@
           alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
           return;
         }
-        //for sample chart 1
+        //for sample chart 1 (columnchart)
         var data = response.getDataTable();
         var col_options = {
           series: {
@@ -49,11 +73,10 @@
           }
 
         };
-        //columnchart
         var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
         chart.draw(data, col_options);
 
-        //for sample chart 2
+        //for sample chart 2 (linechart)
         var curve_options = {
           curveType: 'function',
           series: {
@@ -72,12 +95,9 @@
             slantedTextAngle: 90
           }
         };
-        //linechart
         var chart1 = new google.visualization.LineChart(document.getElementById('curve_chart'));
         chart1.draw(data, curve_options);
-      
 
-        //replicate of supplementary figure 1
         //replicate of supplementary figure 1
         var data1 = google.visualization.arrayToDataTable([
           ['Alternative Splicing Events', 'Type I', { role: 'annotation' }, 'Type II', { role: 'annotation' }, 'Type III', { role: 'annotation' }, 'Type II/III', { role: 'annotation' }],
@@ -106,50 +126,177 @@
         var suppfig1 = new google.visualization.ColumnChart(container);
         suppfig1.draw(data1, data1_options);
 
-        // var data1 = google.visualization.DataTable();
-        // data1.addColumn('number', 'Type I');
-        // data1.addColumn('number', 'Type II');
-        // data1.addColumn('number', 'Type III');
-        // data1.addRows([183, 107, 6], [223, 169, 4], [91, 32, null]);
-        // var view = new google.visualization.DataView(data1);
-
-        //   ['Type I', 'Type II', 'Type III', { role: 'annotation' } ],
-        //   ['Alternate Events in vivo', 183, 107, , ''],
-        //   ['Alternative Events in vitro', 223, 169, , ''],
-        //   ['Alternative Events in vitro and in vivo', 91, 32, , ''];
-        // var options_fullStacked = {
-        //   isStacked: 'percent',
-        //   height: 300,
-        //   legend: {position: 'top', maxLines: 3},
-        //   vAxis: {
-        //     minValue: 0,
-        //     ticks: [0, .25, .5, .75, 1]
-        //   }
-        // };
       }
-      // function drawChart() {
+       //for pten_suppl_1 
+      function handleQueryResponse0(response) {
+        if (response.isError()) {
+          alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
+          return;
+        }
+        var data = response.getDataTable();
+        var view = new google.visualization.DataView(data);
+        view.setColumns([0, 1,
+          {
+            calc: function (dt, row) {
+              if ((dt.getValue(row, 1) >= 1.25)) {
+                return '#11293B';
+              }
+              if ((dt.getValue(row, 1) >= 1)) {
+                return '#1D4361';
+              }
+              if ((dt.getValue(row, 1) >= 0.75)) {
+                return '#295F89';
+              }
+              if ((dt.getValue(row, 1) >= 0.5)) {
+                return '#347Ab0';
+              }
+              if ((dt.getValue(row, 1) >= 0.25)) {
+                return '#4E94CA';
+              }
+              if ((dt.getValue(row, 1) >= 0)) {
+                return '#74ABD6';
+              }
+              if ((dt.getValue(row, 1) >= -.25)) {
+                return '#93BEDF';
+              }           
+            },
+            type: 'string',
+            role: 'style',
+          },
+        ]);
+        var options =  {
+          title: 'PTEN Variants',
+          pointSize: 1,
+          legend: {position: 'none'},
+          vAxis: {
+            ticks: [-.25, 0, .25, .5, .75, 1, 1.25, 1.5]
+          },
+          hAxis: {
+            textStyle: {
+              fontSize: 8,
+            },
+            //slantedText: false if you want full, layered horizontal x-axis labels
+            slantedText: true,
+            slantedTextAngle: 90
+          }
+        };
+        var chart = new google.visualization.ScatterChart(document.getElementById('pten_suppl'));
+        chart.draw(view, options);
+      }
 
-      //   // Create the data table.
-      //   var data = new google.visualization.DataTable();
-      //   data.addColumn('string', 'Topping');
-      //   data.addColumn('number', 'Slices');
-      //   data.addRows([
-      //     ['Mushrooms', 3],
-      //     ['Onions', 1],
-      //     ['Olives', 1],
-      //     ['Zucchini', 1],
-      //     ['Pepperoni', 2]
-      //   ]);
+      function handleQueryResponse1(response) {
+        if (response.isError()) {
+          alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
+          return;
+        }
+        var data = response.getDataTable();
+        var options =  {
+          title: 'PTEN Variants: low abundance',
+          height: 800,
+          width: 500,
+          pointSize: 1,
+          legend: {position: 'none'},
+          vAxis: {
+            ticks: [-.25, 0, .25, .5, .75, 1, 1.25, 1.5]
+          },
+          hAxis: {
+            textStyle: {
+              fontSize: 8,
+            },
+            //slantedText: false if you want full, layered horizontal x-axis labels
+            slantedText: true,
+            slantedTextAngle: 90
+          }
+        };
+        var chart = new google.visualization.ScatterChart(document.getElementById('pten_suppl_.3'));
+        chart.draw(data, options);
+      }
 
-      //   // Set chart options
-      //   var options = {'title':'How Much Pizza I Ate Last Night',
-      //                  'width':400,
-      //                  'height':300};
+      function handleQueryResponse2(response) {
+        if (response.isError()) {
+          alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
+          return;
+        }
+        var data = response.getDataTable();
+        var options =  {
+          title: 'possibly low abundance',
+          height: 800,
+          width: 500,
+          pointSize: 1,
+          legend: {position: 'none'},
+          vAxis: {
+            ticks: [-.25, 0, .25, .5, .75, 1, 1.25, 1.5],
+            textPosition: 'none',
+          },
+          hAxis: {
+            textStyle: {
+              fontSize: 8,
+            },
+            //slantedText: false if you want full, layered horizontal x-axis labels
+            slantedText: true,
+            slantedTextAngle: 90
+          }
+        };
+        var chart = new google.visualization.ScatterChart(document.getElementById('pten_suppl_.6'));
+        chart.draw(data, options);
+      }
+      function handleQueryResponse3(response) {
+        if (response.isError()) {
+          alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
+          return;
+        }
+        var data = response.getDataTable();
+        var options =  {
+          title: 'possibly wild-type-like abundance',
+          height: 800,
+          width: 500,
+          pointSize: 1,
+          legend: {position: 'none'},
+          vAxis: {
+            ticks: [-.25, 0, .25, .5, .75, 1, 1.25, 1.5],
+            textPosition: 'none',
+          },
+          hAxis: {
+            textStyle: {
+              fontSize: 8,
+            },
+            //slantedText: false if you want full, layered horizontal x-axis labels
+            slantedText: true,
+            slantedTextAngle: 90
+          }
+        };
+        var chart = new google.visualization.ScatterChart(document.getElementById('pten_suppl_.9'));
+        chart.draw(data, options);
+      }
+      function handleQueryResponse4(response) {
+        if (response.isError()) {
+          alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
+          return;
+        }
+        var data = response.getDataTable();
+        var options =  {
+          title: 'wild-type-like abundance',
+          height: 800,
+          width: 500,
+          pointSize: 1,
+          vAxis: {
+            ticks: [-.25, 0, .25, .5, .75, 1, 1.25, 1.5],
+            textPosition: 'none',
+          },
+          hAxis: {
+            textStyle: {
+              fontSize: 8,
+            },
+            //slantedText: false if you want full, layered horizontal x-axis labels
+            slantedText: true,
+            slantedTextAngle: 90
+          }
+        };
+        var chart = new google.visualization.ScatterChart(document.getElementById('pten_suppl_1.2'));
+        chart.draw(data, options);
+      }
 
-      //   // Instantiate and draw our chart, passing in some options.
-      //   var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
-      //   chart.draw(data, options);
-      // }
+      
     </script>
   </head>
 
@@ -158,5 +305,14 @@
     <div id="chart_div" style="width: 1500px; height: 800px;"></div>
     <div id="curve_chart" style="width: 1500px; height: 800px;"></div>
     <div id="suppfig1" style="width: 1500px; height: 800px;"></div>
+    <div id="pten_suppl" style="width: 2200px; height: 800px;"></div>
+    <table class= "columns">
+      <tr>
+        <td style="padding: 0 !important; margin: 0 !important;"><div id="pten_suppl_.3" style="width: 500px; height: 800px;"></div></td>
+        <td style="padding: 0 !important; margin: 0 !important;"><div id="pten_suppl_.6" style="width: 500px; height: 800px;"></div></td>
+        <td style="padding: 0 !important; margin: 0 !important;"><div id="pten_suppl_.9" style="width: 500px; height: 800px;"></div></td>
+        <td style="padding: 0 !important; margin: 0 !important;"><div id="pten_suppl_1.2" style="width: 500px; height: 800px;"></div></td>
+      </tr>
+    </table>
   </body>
 </html>
