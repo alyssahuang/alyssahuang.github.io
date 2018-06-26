@@ -1,5 +1,15 @@
 <html>
   <head>
+  <!--<style>
+  td {
+    padding-left: 0px;
+    padding-right: 0px;
+  }
+
+  table {
+    margin: 0px 0px;
+  }
+  </style>-->
     <!--Load the AJAX API-->
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript">
@@ -10,6 +20,7 @@
       // Set a callback to run when the Google Visualization API is loaded.
       google.charts.setOnLoadCallback(drawSheetName);
       google.charts.setOnLoadCallback(drawPTEN);
+      google.charts.setOnLoadCallback(drawTPMT);
 
       // Callback that creates and populates a data table,
       // instantiates the pie chart, passes in the data and
@@ -39,13 +50,11 @@
         pten_query3.send(handleQueryResponse3);
         var pten_query4 = new google.visualization.Query('https://docs.google.com/spreadsheets/d/11VBFK5PBISyVOb-tnicFHF3GB8iYgg8ib5UxFYNE4-k/edit?usp=sharing' + '&tq=' + pten_queryString4);
         pten_query4.send(handleQueryResponse4);
-
-        
-        //for testing
-        // var queryString = encodeURIComponent('SELECT C, F, G , H, I ORDER BY A');
-        // var query = new google.visualization.Query('https://docs.google.com/spreadsheets/d/19MzVXOJdGFoLaR3Crc4N90uISC-jYKj16vinwV_ogkU/edit?usp=sharing' + '&tq=' + queryString);
-        // query.send(handleQueryResponse1);
-
+      }
+      function drawTPMT() {
+        var tpmt_queryString = encodeURIComponent('SELECT A, G WHERE F != \'NA\' ORDER BY F');
+        var tpmt_query = new google.visualization.Query('https://docs.google.com/spreadsheets/d/1iH53xOHw0R9KRsl0S3ZaQXYN0tcyIeLOSV7IYxcPBio/edit?usp=sharing' + '&tq=' + tpmt_queryString);
+        tpmt_query.send(handleTPMTQueryResponse);
       }
 
       function handleQueryResponse(response) {
@@ -166,10 +175,12 @@
         ]);
         var options =  {
           title: 'PTEN Variants',
+          series: {
+            0:{labelInLegend: 'VAMP-seq score'},
+          },
           pointSize: 1,
-          legend: {position: 'none'},
           vAxis: {
-            ticks: [-.25, 0, .25, .5, .75, 1, 1.25, 1.5]
+            ticks: [-.75, -.5, -.25, 0, .25, .5, .75, 1, 1.25, 1.5, 1.75, 2]
           },
           hAxis: {
             textStyle: {
@@ -276,6 +287,9 @@
         var data = response.getDataTable();
         var options =  {
           title: 'wild-type-like abundance',
+          series: {
+            0:{labelInLegend: 'VAMP-seq score'},
+          },
           height: 800,
           width: 500,
           pointSize: 1,
@@ -296,7 +310,75 @@
         chart.draw(data, options);
       }
 
-      
+      function handleTPMTQueryResponse(response) {
+        if (response.isError()) {
+          alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
+          return;
+        }
+        var data = response.getDataTable();
+        var view = new google.visualization.DataView(data);
+        view.setColumns([0, 1,
+          {
+            calc: function (dt, row) {
+              if ((dt.getValue(row, 1) >= 1.75)) {
+                return '#000000';
+              }
+              if ((dt.getValue(row, 1) >= 1.5)) {
+                return '#060D12';
+              }
+              if ((dt.getValue(row, 1) >= 1.25)) {
+                return '#11293B';
+              }
+              if ((dt.getValue(row, 1) >= 1)) {
+                return '#1D4361';
+              }
+              if ((dt.getValue(row, 1) >= 0.75)) {
+                return '#295F89';
+              }
+              if ((dt.getValue(row, 1) >= 0.5)) {
+                return '#347Ab0';
+              }
+              if ((dt.getValue(row, 1) >= 0.25)) {
+                return '#4E94CA';
+              }
+              if ((dt.getValue(row, 1) >= 0)) {
+                return '#74ABD6';
+              }
+              if ((dt.getValue(row, 1) >= -.25)) {
+                return '#93BEDF';
+              }
+              if ((dt.getValue(row, 1) >= -.5)) {
+                return '#B0D0E8';
+              }
+              if ((dt.getValue(row, 1) >= -.75)) {
+                return '#D7E7F3';
+              }                     
+            },
+            type: 'string',
+            role: 'style',
+          },
+        ]);
+        var options =  {
+          title: 'TPMT Variants',
+          series: {
+            0:{labelInLegend: 'VAMP-seq score'},
+          },
+          pointSize: 1,
+          vAxis: {
+            ticks: [-.75, -.5, -.25, 0, .25, .5, .75, 1, 1.25, 1.5, 1.75, 2]
+          },
+          hAxis: {
+            textStyle: {
+              fontSize: 8,
+            },
+            //slantedText: false if you want full, layered horizontal x-axis labels
+            slantedText: true,
+            slantedTextAngle: 90
+          }
+        };
+        var chart = new google.visualization.ScatterChart(document.getElementById('tpmt_suppl_1'));
+        chart.draw(view, options);
+      }
     </script>
   </head>
 
@@ -305,13 +387,14 @@
     <div id="chart_div" style="width: 1500px; height: 800px;"></div>
     <div id="curve_chart" style="width: 1500px; height: 800px;"></div>
     <div id="suppfig1" style="width: 1500px; height: 800px;"></div>
-    <div id="pten_suppl" style="width: 2200px; height: 800px;"></div>
-    <table class= "columns">
+    <div id="tpmt_suppl_1" style="width: 2200px; height: 1200px;"></div>
+    <div id="pten_suppl" style="width: 2200px; height: 1200px;"></div>
+    <table>
       <tr>
         <td style="padding: 0 !important; margin: 0 !important;"><div id="pten_suppl_.3" style="width: 500px; height: 800px;"></div></td>
         <td style="padding: 0 !important; margin: 0 !important;"><div id="pten_suppl_.6" style="width: 500px; height: 800px;"></div></td>
         <td style="padding: 0 !important; margin: 0 !important;"><div id="pten_suppl_.9" style="width: 500px; height: 800px;"></div></td>
-        <td style="padding: 0 !important; margin: 0 !important;"><div id="pten_suppl_1.2" style="width: 500px; height: 800px;"></div></td>
+        <td style="padding: 0 !important; margin: 0 !important;"><div id="pten_suppl_1.2" style="width: 600px; height: 800px;"></div></td>
       </tr>
     </table>
   </body>
